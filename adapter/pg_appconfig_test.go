@@ -14,9 +14,14 @@ import (
 
 var (
 	// uat := dnt.Format("20060102150405")
-	dnt, _    = time.Parse("20060102150405", "20221120121212")
+	dnt, _    = time.ParseInLocation("20060102150405", "20221120121212", time.Local)
 	appConfig = entity.AppConfig{
 		ID:        "b69aa108-f12e-4fa0-bf4f-ba002c11a670",
+		Name:      "Test-Woong-App1",
+		UpdatedAt: &dnt,
+	}
+	appConfig2 = entity.AppConfig{
+		ID:        "c69aa108-f12e-4fa0-bf4f-ba002c11a670",
 		Name:      "Test-Woong-App",
 		UpdatedAt: &dnt,
 	}
@@ -41,7 +46,28 @@ func TestCreateAppConfig(t *testing.T) {
 	affected, err := repo.CreateAppconfig(ctx, tx, appConfig)
 	assert.Nil(t, err)
 	assert.EqualValues(t, 1, affected)
+	assert.Nil(t, tx.Commit())
+}
 
+func TestCreateAppConfig2(t *testing.T) {
+	if !onlinetest {
+		t.Skip("skipping online tests")
+	}
+
+	ctx := context.Background()
+
+	beginner := txcom.NewGormTxBeginner(gdb)
+	repo := adapter.NewPgAppconfig(gdb)
+
+	tx, err := beginner.Begin()
+	assert.Nil(t, err)
+	defer tx.Rollback()
+
+	repo.DeleteAppconfig(ctx, tx, appConfig2.ID)
+	repo.DeleteAppconfig(ctx, tx, appConfig2.ID)
+	affected, err := repo.CreateAppconfig(ctx, tx, appConfig2)
+	assert.Nil(t, err)
+	assert.EqualValues(t, 1, affected)
 	assert.Nil(t, tx.Commit())
 }
 

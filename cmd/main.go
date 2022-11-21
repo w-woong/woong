@@ -109,20 +109,31 @@ func main() {
 		os.Exit(1)
 	}
 
+	// repo
 	var beginner common.TxBeginner
 	var appConfigRepo port.AppConfigRepo
+	var homeRepo port.HomeRepo
+	var shortNoticeRepo port.ShortNoticeRepo
 	switch conf.Server.Repo.Driver {
 	case "pgx":
 		beginner = txcom.NewGormTxBeginner(gormDB)
 		appConfigRepo = adapter.NewPgAppconfig(gormDB)
+		homeRepo = adapter.NewHomePg(gormDB)
+		shortNoticeRepo = adapter.NewShortNoticePg(gormDB)
 	default:
 		logger.Error(conf.Server.Repo.Driver + " is not allowed")
 		os.Exit(1)
 	}
+
+	// usecase
 	usc := usecase.NewAppConfigUsc(beginner, appConfigRepo)
+	homeUsc := usecase.NewHomeUsc(beginner, homeRepo, shortNoticeRepo)
 
 	// http handler
 	handler = delivery.NewAppConfigHttpHandler(defaultTimeout, usc)
+	homeHandler = delivery.NewHomeHttpHandler(defaultTimeout, homeUsc)
+
+	// router
 	router := mux.NewRouter()
 	SetRoute(router, conf.Server.Http)
 
@@ -159,7 +170,8 @@ func main() {
 }
 
 var (
-	handler *delivery.AppConfigHttpHandler
+	handler     *delivery.AppConfigHttpHandler
+	homeHandler *delivery.HomeHttpHandler
 )
 
 func SetRoute(router *mux.Router, conf common.ConfigHttp) {
@@ -171,4 +183,7 @@ func SetRoute(router *mux.Router, conf common.ConfigHttp) {
 		common.AuthBearerHandler(handler.HandleFindAppConfig, conf.BearerToken),
 	).Methods(http.MethodGet)
 
+	router.HandleFunc("/v1/woong/home/appconfig/{id}",
+		common.AuthBearerHandler(homeHandler.HandleFindByAppConfigID, conf.BearerToken),
+	).Methods(http.MethodGet)
 }
