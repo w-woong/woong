@@ -12,6 +12,12 @@ func init() {
 
 	structmapper.StoreMapper(&dto.ShortNotice{}, &entity.ShortNotice{})
 	structmapper.StoreMapper(&entity.ShortNotice{}, &dto.ShortNotice{})
+
+	structmapper.StoreMapper(&dto.MainPromotion{}, &entity.MainPromotion{})
+	structmapper.StoreMapper(&entity.MainPromotion{}, &dto.MainPromotion{})
+
+	structmapper.StoreMapper(&dto.Tag{}, &entity.Tag{})
+	structmapper.StoreMapper(&entity.Tag{}, &dto.Tag{})
 }
 
 func ToHomeEntity(src *dto.Home) (res entity.Home, err error) {

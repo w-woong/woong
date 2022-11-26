@@ -30,4 +30,9 @@ type ShortNoticeRepo interface {
 	ReadByHomeIDNoTx(ctx context.Context, homeID string) (entity.ShortNoticeList, error)
 	UpdateShortNotice(ctx context.Context, tx common.TxController, id string, notice entity.Home) (int64, error)
 	DeleteShortNotice(ctx context.Context, tx common.TxController, id string) (int64, error)
+	DeleteByHomeID(ctx context.Context, tx common.TxController, homeID string) (int64, error)
+}
+
+type MainPromotionRepo interface {
+	DeleteByHomeID(ctx context.Context, tx common.TxController, homeID string) (int64, error)
 }

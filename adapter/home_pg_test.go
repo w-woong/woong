@@ -25,9 +25,45 @@ var (
 			entity.ShortNotice{
 				ID:          "dd9aa108-f12e-4fa0-bf4f-ba002c11a671",
 				HomeID:      "c69aa108-f12e-4fa0-bf4f-ba002c11a671",
-				ImgUrl:      "assets/images/delivery.png",
+				ImgUrl:      "assets/images/icons/2x/outline_notification_important_black_24dp.png",
 				Name:        "Delivery",
 				Description: "Abount Delivery",
+			},
+			entity.ShortNotice{
+				ID:          "ed9aa108-f12e-4fa0-bf4f-ba002c11a671",
+				HomeID:      "c69aa108-f12e-4fa0-bf4f-ba002c11a671",
+				ImgUrl:      "assets/images/icons/2x/outline_notification_important_white_24dp.png",
+				Name:        "Delivery",
+				Description: "Abount Delivery",
+			},
+		},
+
+		MainPromotionList: entity.MainPromotionList{
+			entity.MainPromotion{
+				ID:          "dd9aa108-f12e-4fa0-bf4f-ba002c11a671",
+				HomeID:      "c69aa108-f12e-4fa0-bf4f-ba002c11a671",
+				ImgUrl:      "https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80",
+				Name:        "Delivery",
+				Description: "Abount Delivery",
+				Tags: entity.Tags{
+					entity.Tag{
+						ID:   "tag2a108-f12e-4fa0-bf4f-ba002c11a671",
+						Name: "new",
+					},
+				},
+			},
+			entity.MainPromotion{
+				ID:          "ed9aa108-f12e-4fa0-bf4f-ba002c11a671",
+				HomeID:      "c69aa108-f12e-4fa0-bf4f-ba002c11a671",
+				ImgUrl:      "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80",
+				Name:        "Delivery",
+				Description: "Abount Delivery",
+				Tags: entity.Tags{
+					entity.Tag{
+						ID:   "tag1a108-f12e-4fa0-bf4f-ba002c11a671",
+						Name: "old",
+					},
+				},
 			},
 		},
 	}
@@ -66,11 +102,16 @@ func Test_homePg_CreateHome(t *testing.T) {
 
 	beginner := txcom.NewGormTxBeginner(gdb)
 	repo := adapter.NewHomePg(gdb)
+	shortNoticePg := adapter.NewShortNoticePg(gdb)
+	mainPromotionPg := adapter.NewMainPromotionPg(gdb)
 
 	tx, err := beginner.Begin()
 	assert.Nil(t, err)
 	defer tx.Rollback()
 
+	mainPromotionPg.DeleteByHomeID(ctx, tx, home.ID)
+	shortNoticePg.DeleteByHomeID(ctx, tx, home.ID)
+	repo.DeleteHome(ctx, tx, home.ID)
 	affected, err := repo.CreateHome(ctx, tx, home)
 	assert.Nil(t, err)
 	assert.EqualValues(t, 1, affected)

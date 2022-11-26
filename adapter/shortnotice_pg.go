@@ -35,9 +35,12 @@ func (a *shortNoticePg) ReadShortNoticeNoTx(ctx context.Context, id string) (not
 
 	res := a.db.WithContext(ctx).
 		Where("id = ?", id).
-		First(&notice)
+		Limit(1).Find(&notice)
 	if res.Error != nil {
 		return entity.NilShortNotice, txcom.ConvertErr(res.Error)
+	}
+	if res.RowsAffected == 0 {
+		return entity.NilShortNotice, common.ErrRecordNotFound
 	}
 	return
 }
@@ -74,6 +77,18 @@ func (a *shortNoticePg) DeleteShortNotice(ctx context.Context, tx common.TxContr
 	res := tx.(*txcom.GormTxController).Tx.
 		WithContext(ctx).
 		Delete(&entity.ShortNotice{ID: id})
+	if res.Error != nil {
+		logger.Error(res.Error.Error())
+		return 0, txcom.ConvertErr(res.Error)
+	}
+	return res.RowsAffected, nil
+}
+
+func (a *shortNoticePg) DeleteByHomeID(ctx context.Context, tx common.TxController, homeID string) (int64, error) {
+	res := tx.(*txcom.GormTxController).Tx.
+		WithContext(ctx).
+		Where("home_id = ?", homeID).
+		Delete(&entity.ShortNotice{})
 	if res.Error != nil {
 		logger.Error(res.Error.Error())
 		return 0, txcom.ConvertErr(res.Error)

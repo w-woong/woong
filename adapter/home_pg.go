@@ -8,6 +8,7 @@ import (
 	"github.com/w-woong/common/txcom"
 	"github.com/w-woong/woong/entity"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type homePg struct {
@@ -35,7 +36,9 @@ func (a *homePg) ReadHomeNoTx(ctx context.Context, id string) (home entity.Home,
 
 	res := a.db.WithContext(ctx).
 		Where("id = ?", id).
-		Preload("AppConfig").Preload("ShortNoticeList").
+		// Preload("AppConfig").Preload("ShortNoticeList").Preload("MainPromotionList").
+		Preload("MainPromotionList.Tags").
+		Preload(clause.Associations).
 		First(&home)
 	if res.Error != nil {
 		return entity.NilHome, txcom.ConvertErr(res.Error)
@@ -48,7 +51,9 @@ func (a *homePg) ReadByAppConfigIDNoTx(ctx context.Context, appConfigID string) 
 
 	res := a.db.WithContext(ctx).
 		Where("app_config_id = ?", appConfigID).
-		Preload("AppConfig").Preload("ShortNoticeList").
+		// Preload("AppConfig").Preload("ShortNoticeList").Preload("MainPromotionList").Preload("Tags").
+		Preload("MainPromotionList.Tags").
+		Preload(clause.Associations).
 		First(&home)
 	if res.Error != nil {
 		return entity.NilHome, txcom.ConvertErr(res.Error)

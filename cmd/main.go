@@ -99,7 +99,8 @@ func main() {
 	switch conf.Server.Repo.Driver {
 	case "pgx":
 		gormDB, err = sigorm.OpenPostgres(sqlDB)
-		gormDB.AutoMigrate(&entity.AppConfig{})
+		gormDB.AutoMigrate(&entity.AppConfig{}, &entity.Home{}, &entity.ShortNotice{},
+			&entity.MainPromotion{}, &entity.Tag{})
 	default:
 		logger.Error(conf.Server.Repo.Driver + " is not allowed")
 		os.Exit(1)
