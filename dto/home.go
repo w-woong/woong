@@ -3,6 +3,8 @@ package dto
 import (
 	"encoding/json"
 	"time"
+
+	productdto "github.com/w-woong/product/dto"
 )
 
 var (
@@ -19,9 +21,9 @@ type Home struct {
 	AppConfigID string     `json:"app_config_id"`
 	AppConfig   *AppConfig `json:"app_config,omitempty"`
 
-	ShortNoticeList   ShortNoticeList   `json:"short_notice_list"`
-	MainPromotionList MainPromotionList `json:"main_promotion_list"`
-	// MainProducts      ProductList       `json:"main_products"`
+	ShortNoticeList   ShortNoticeList      `json:"short_notice_list"`
+	MainPromotionList MainPromotionList    `json:"main_promotion_list"`
+	MainProducts      productdto.GroupList `json:"main_products"`
 }
 
 func (e *Home) String() string {

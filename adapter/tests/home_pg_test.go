@@ -66,6 +66,14 @@ var (
 				},
 			},
 		},
+		MainProducts: entity.HomeGroupProductList{
+			{ID: "homegp01-f12e-4fa0-bf4f-ba002c11a671",
+				HomeID:  "c69aa108-f12e-4fa0-bf4f-ba002c11a671",
+				GroupID: "group001-f12e-4fa0-bf4f-ba002c11a671"},
+			{ID: "homegp02-f12e-4fa0-bf4f-ba002c11a671",
+				HomeID:  "c69aa108-f12e-4fa0-bf4f-ba002c11a671",
+				GroupID: "group002-f12e-4fa0-bf4f-ba002c11a671"},
+		},
 	}
 
 	home2 = entity.Home{
@@ -104,11 +112,13 @@ func Test_homePg_CreateHome(t *testing.T) {
 	repo := adapter.NewHomePg(gdb)
 	shortNoticePg := adapter.NewShortNoticePg(gdb)
 	mainPromotionPg := adapter.NewMainPromotionPg(gdb)
+	homeGroupProductPg := adapter.NewHomeGroupProductPg(gdb)
 
 	tx, err := beginner.Begin()
 	assert.Nil(t, err)
 	defer tx.Rollback()
 
+	homeGroupProductPg.DeleteByHomeID(ctx, tx, home.ID)
 	mainPromotionPg.DeleteByHomeID(ctx, tx, home.ID)
 	shortNoticePg.DeleteByHomeID(ctx, tx, home.ID)
 	repo.DeleteHome(ctx, tx, home.ID)

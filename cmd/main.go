@@ -19,6 +19,8 @@ import (
 	"github.com/w-woong/common/configs"
 	"github.com/w-woong/common/logger"
 	"github.com/w-woong/common/txcom"
+	productadapter "github.com/w-woong/product/adapter"
+	productport "github.com/w-woong/product/port"
 	"github.com/w-woong/woong/adapter"
 	"github.com/w-woong/woong/delivery"
 	"github.com/w-woong/woong/entity"
@@ -126,9 +128,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	var groupSvc productport.GroupSvc
+	groupSvc = productadapter.NewGroupHttp(sihttp.DefaultInsecureClient(),
+		conf.Client.Http.Url, conf.Client.Http.BearerToken)
+
 	// usecase
 	usc := usecase.NewAppConfigUsc(beginner, appConfigRepo)
-	homeUsc := usecase.NewHomeUsc(beginner, homeRepo, shortNoticeRepo)
+	homeUsc := usecase.NewHomeUsc(beginner, homeRepo, shortNoticeRepo, groupSvc)
 
 	// http handler
 	handler = delivery.NewAppConfigHttpHandler(defaultTimeout, usc)

@@ -22,7 +22,7 @@ type Home struct {
 	ShortNoticeList   ShortNoticeList   `json:"short_notice_list" gorm:"foreignKey:HomeID;references:ID"`
 	MainPromotionList MainPromotionList `json:"main_promotion_list" gorm:"foreignKey:HomeID;references:ID"`
 
-	// MainProducts ProductList `json:"main_products" gorm:"many2many:main_products;foreignKey:ID;joinForeignKey:HomeID;references:ID;joinReferences:ProductID"`
+	MainProducts HomeGroupProductList `json:"main_products" gorm:"foreignKey:HomeID;references:ID"`
 }
 
 func (e *Home) String() string {
@@ -95,9 +95,4 @@ type Tags []Tag
 func (e *Tags) String() string {
 	b, _ := json.Marshal(e)
 	return string(b)
-}
-
-type MainProduct struct {
-	HomeID    string `json:"home_id" gorm:"column:home_id;primaryKey;type:string;size:64"`
-	ProductID string `json:"product_id" gorm:"column:product_id;primaryKey;type:string;size:64"`
 }

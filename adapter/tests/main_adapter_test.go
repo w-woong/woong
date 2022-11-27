@@ -41,7 +41,7 @@ func setup() error {
 		}
 
 		gdb.AutoMigrate(&entity.AppConfig{}, &entity.Home{}, &entity.ShortNotice{},
-			&entity.MainPromotion{}, &entity.Tag{})
+			&entity.MainPromotion{}, &entity.Tag{}, &entity.HomeGroupProduct{})
 	}
 	return nil
 }

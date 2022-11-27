@@ -32,3 +32,8 @@ server:
     max_idle_conns: 5
     max_open_conns: 25
     conn_max_lifetime_in_min: 15
+
+client:
+  http:
+    url: 'http://localhost:49002'
+    bearer_token: 'ab2316584873095f017f6dfa7a9415794f563fcc473eb3fe65b9167e37fd5a4b'
