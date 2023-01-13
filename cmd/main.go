@@ -41,8 +41,9 @@ var (
 	configName       string
 	maxProc          int
 
-	usePprof  = false
-	pprofAddr = ":56060"
+	usePprof    = false
+	pprofAddr   = ":56060"
+	autoMigrate = false
 )
 
 func init() {
@@ -58,6 +59,7 @@ func init() {
 
 	flag.BoolVar(&usePprof, "pprof", false, "use pprof")
 	flag.StringVar(&pprofAddr, "pprof_addr", ":56060", "pprof listen address")
+	flag.BoolVar(&autoMigrate, "autoMigrate", false, "auto migrate")
 
 	flag.Parse()
 }
@@ -101,8 +103,6 @@ func main() {
 	switch conf.Server.Repo.Driver {
 	case "pgx":
 		gormDB, err = sigorm.OpenPostgres(sqlDB)
-		gormDB.AutoMigrate(&entity.AppConfig{}, &entity.Home{}, &entity.ShortNotice{},
-			&entity.MainPromotion{}, &entity.Tag{})
 	default:
 		logger.Error(conf.Server.Repo.Driver + " is not allowed")
 		os.Exit(1)
@@ -126,6 +126,11 @@ func main() {
 	default:
 		logger.Error(conf.Server.Repo.Driver + " is not allowed")
 		os.Exit(1)
+	}
+
+	if autoMigrate {
+		gormDB.AutoMigrate(&entity.AppConfig{}, &entity.Home{}, &entity.ShortNotice{},
+			&entity.MainPromotion{}, &entity.Tag{}, &entity.HomeGroupProduct{})
 	}
 
 	var groupSvc productport.GroupSvc

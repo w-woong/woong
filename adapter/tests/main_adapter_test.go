@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/w-woong/woong/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -40,8 +39,6 @@ func setup() error {
 			return err
 		}
 
-		gdb.AutoMigrate(&entity.AppConfig{}, &entity.Home{}, &entity.ShortNotice{},
-			&entity.MainPromotion{}, &entity.Tag{}, &entity.HomeGroupProduct{})
 	}
 	return nil
 }
