@@ -3,6 +3,8 @@ package entity
 import (
 	"encoding/json"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 var (
@@ -13,7 +15,7 @@ var (
 type Home struct {
 	ID        string     `json:"id" gorm:"primaryKey;type:string;size:64"`
 	CreatedAt *time.Time `json:"created_at" gorm:"<-:create"`
-	UpdatedAt *time.Time `json:"updated_at" gorm:"<-:update"`
+	UpdatedAt *time.Time `json:"updated_at" gorm:"<-"`
 	Name      string     `json:"name" gorm:"column:name;type:string;size:256"`
 
 	AppConfigID string     `json:"app_config_id" gorm:"column:app_config_id;type:string;size:64;unique;not null"`
@@ -28,6 +30,23 @@ type Home struct {
 func (e *Home) String() string {
 	b, _ := json.Marshal(e)
 	return string(b)
+}
+
+func (e Home) CreateID() string {
+	return uuid.New().String()
+}
+
+func (e *Home) CreateSetID() {
+	e.ID = e.CreateID()
+}
+
+func (e Home) IsNil() bool {
+	return e.ID == "" && e.AppConfigID == ""
+}
+
+func (e *Home) ReferTo(appConfigID string) {
+	e.AppConfigID = appConfigID
+	e.AppConfig = &AppConfig{ID: appConfigID}
 }
 
 type ShortNotice struct {

@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
-	"net/http"
 	"os"
 	"runtime"
 	"strings"
@@ -22,7 +21,7 @@ import (
 	productadapter "github.com/w-woong/product/adapter"
 	productport "github.com/w-woong/product/port"
 	"github.com/w-woong/woong/adapter"
-	"github.com/w-woong/woong/delivery"
+	"github.com/w-woong/woong/cmd/route"
 	"github.com/w-woong/woong/entity"
 	"github.com/w-woong/woong/port"
 	"github.com/w-woong/woong/usecase"
@@ -50,8 +49,8 @@ func init() {
 	flag.StringVar(&addr, "addr", ":49001", "listen address")
 	flag.BoolVar(&printVersion, "version", false, "print version")
 	flag.IntVar(&tickIntervalSec, "tick", 30, "tick interval in second")
-	flag.StringVar(&certKey, "key", "", "server key")
-	flag.StringVar(&certPem, "pem", "", "server pem")
+	flag.StringVar(&certKey, "key", "./certs/key.pem", "server key")
+	flag.StringVar(&certPem, "pem", "./certs/cert.pem", "server pem")
 	flag.IntVar(&readTimeout, "readTimeout", 30, "read timeout")
 	flag.IntVar(&writeTimeout, "writeTimeout", 30, "write timeout")
 	flag.StringVar(&configName, "config", "./configs/server.yml", "config file name")
@@ -65,8 +64,6 @@ func init() {
 }
 
 func main() {
-	defaultTimeout := 6 * time.Second
-
 	var err error
 
 	if printVersion {
@@ -141,13 +138,10 @@ func main() {
 	usc := usecase.NewAppConfigUsc(beginner, appConfigRepo)
 	homeUsc := usecase.NewHomeUsc(beginner, homeRepo, shortNoticeRepo, groupSvc)
 
-	// http handler
-	handler = delivery.NewAppConfigHttpHandler(defaultTimeout, usc)
-	homeHandler = delivery.NewHomeHttpHandler(defaultTimeout, homeUsc)
-
 	// router
 	router := mux.NewRouter()
-	SetRoute(router, conf.Server.Http)
+	route.AppConfigRoute(router, conf.Server.Http, usc)
+	route.HomeRoute(router, conf.Server.Http, homeUsc)
 
 	// http server
 	tlsConfig := sihttp.CreateTLSConfigMinTls(tls.VersionTLS12)
@@ -179,23 +173,4 @@ func main() {
 	ticker.Stop()
 	tickerDone <- true
 	logger.Info("finished")
-}
-
-var (
-	handler     *delivery.AppConfigHttpHandler
-	homeHandler *delivery.HomeHttpHandler
-)
-
-func SetRoute(router *mux.Router, conf common.ConfigHttp) {
-	router.HandleFunc("/v1/woong/appconfig",
-		common.AuthBearerHandler(handler.HandleAddAppConfig, conf.BearerToken),
-	).Methods(http.MethodPost)
-
-	router.HandleFunc("/v1/woong/appconfig/{id}",
-		common.AuthBearerHandler(handler.HandleFindAppConfig, conf.BearerToken),
-	).Methods(http.MethodGet)
-
-	router.HandleFunc("/v1/woong/home/appconfig/{id}",
-		common.AuthBearerHandler(homeHandler.HandleFindByAppConfigID, conf.BearerToken),
-	).Methods(http.MethodGet)
 }

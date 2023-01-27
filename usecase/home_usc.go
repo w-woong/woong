@@ -30,6 +30,28 @@ func NewHomeUsc(beginner common.TxBeginner,
 	}
 }
 
+func (u *homeUsc) AddHome(ctx context.Context, home dto.Home) (int64, error) {
+	tx, err := u.beginner.Begin()
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+
+	homeEntity, err := conv.ToHomeEntity(&home)
+	if err != nil {
+		return 0, err
+	}
+	homeEntity.CreateSetID()
+	homeEntity.ReferTo(homeEntity.AppConfigID)
+
+	rowsAffected, err := u.homeRepo.CreateHome(ctx, tx, homeEntity)
+	if err != nil {
+		return 0, err
+	}
+
+	return rowsAffected, tx.Commit()
+}
+
 func (u *homeUsc) FindByAppConfigID(ctx context.Context, appConfigID string) (dto.Home, error) {
 	home, err := u.homeRepo.ReadByAppConfigIDNoTx(ctx, appConfigID)
 	if err != nil {

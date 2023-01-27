@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/w-woong/common"
@@ -34,7 +33,9 @@ func (u *appConfigUsc) AddAppConfig(ctx context.Context, appConfig dto.AppConfig
 	if err != nil {
 		return 0, err
 	}
-	appConfigEntity.GenerateAndSetID()
+	if appConfigEntity.ID == "" {
+		appConfigEntity.CreateSetID()
+	}
 
 	rowsAffected, err := u.repo.CreateAppconfig(ctx, tx, appConfigEntity)
 	if err != nil {
@@ -47,9 +48,6 @@ func (u *appConfigUsc) AddAppConfig(ctx context.Context, appConfig dto.AppConfig
 func (u *appConfigUsc) FindAppConfig(ctx context.Context, id string) (dto.AppConfig, error) {
 	res, err := u.repo.ReadAppconfigNoTx(ctx, id)
 	if err != nil {
-		if errors.Is(err, common.ErrRecordNotFound) {
-			return dto.NilAppConfig, nil
-		}
 		return dto.NilAppConfig, err
 	}
 	return conv.ToAppConfigDto(&res)

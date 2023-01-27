@@ -68,13 +68,8 @@ func (d *AppConfigHttpHandler) HandleFindAppConfig(w http.ResponseWriter, r *htt
 
 	var resBody common.HttpBody
 	resBody.Status = http.StatusOK
-	if !appConfig.IsNil() {
-		resBody.Count = 1
-		resBody.Document = &appConfig
-	} else {
-		resBody.Count = 0
-		resBody.Message = common.ErrRecordNotFound.Error()
-	}
+	resBody.Count = 1
+	resBody.Document = &appConfig
 
 	if err := resBody.EncodeTo(w); err != nil {
 		logger.Error(err.Error(), logger.UrlField(r.URL.String()))

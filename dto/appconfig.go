@@ -12,7 +12,3 @@ type AppConfig struct {
 	UpdatedAt *time.Time `json:"updated_at,omitempty"`
 	Name      string     `json:"name"`
 }
-
-func (d AppConfig) IsNil() bool {
-	return d.ID == ""
-}

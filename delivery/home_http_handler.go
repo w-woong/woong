@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-wonk/si"
 	"github.com/gorilla/mux"
 	"github.com/w-woong/common"
 	"github.com/w-woong/common/logger"
+	"github.com/w-woong/woong/dto"
 	"github.com/w-woong/woong/port"
 )
 
@@ -20,6 +22,36 @@ func NewHomeHttpHandler(timeout time.Duration, usc port.HomeUsc) *HomeHttpHandle
 	return &HomeHttpHandler{
 		timeout: timeout,
 		usc:     usc,
+	}
+}
+
+func (d *HomeHttpHandler) HandleAddHome(w http.ResponseWriter, r *http.Request) {
+	var home dto.Home
+	reqBody := common.HttpBody{
+		Document: &home,
+	}
+
+	if err := si.DecodeJson(&reqBody, r.Body); err != nil {
+		common.HttpError(w, http.StatusBadRequest)
+		logger.Error(err.Error(), logger.UrlField(r.URL.String()))
+		return
+	}
+	rowsAffected, err := d.usc.AddHome(r.Context(), home)
+	if err != nil {
+		common.HttpError(w, http.StatusInternalServerError)
+		logger.Error(err.Error(), logger.UrlField(r.URL.String()))
+		return
+	}
+
+	if rowsAffected != 1 {
+		common.HttpError(w, http.StatusInternalServerError)
+		logger.Error("home was not added", logger.UrlField(r.URL.String()))
+		return
+	}
+
+	if err := common.HttpBodyOK.EncodeTo(w); err != nil {
+		logger.Error(err.Error(), logger.UrlField(r.URL.String()))
+		return
 	}
 }
 
