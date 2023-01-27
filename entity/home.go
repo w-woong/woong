@@ -52,7 +52,7 @@ func (e *Home) ReferTo(appConfigID string) {
 type ShortNotice struct {
 	ID          string     `json:"id" gorm:"primaryKey;type:string;size:64"`
 	CreatedAt   *time.Time `json:"created_at" gorm:"<-:create"`
-	UpdatedAt   *time.Time `json:"updated_at" gorm:"<-:update"`
+	UpdatedAt   *time.Time `json:"updated_at" gorm:"<-"`
 	HomeID      string     `json:"home_id" gorm:"column:home_id;type:string;size:64;not null"`
 	ImgUrl      string     `json:"img_url" gorm:"type:string;size:2048"`
 	Name        string     `json:"name" gorm:"column:name;type:string;size:256"`
@@ -74,7 +74,7 @@ func (e *ShortNoticeList) String() string {
 type MainPromotion struct {
 	ID          string     `json:"id" gorm:"primaryKey;type:string;size:64"`
 	CreatedAt   *time.Time `json:"created_at" gorm:"<-:create"`
-	UpdatedAt   *time.Time `json:"updated_at" gorm:"<-:update"`
+	UpdatedAt   *time.Time `json:"updated_at" gorm:"<-"`
 	HomeID      string     `json:"home_id" gorm:"column:home_id;type:string;size:64;not null"`
 	ImgUrl      string     `json:"img_url" gorm:"type:string;size:2048"`
 	Name        string     `json:"name" gorm:"column:name;type:string;size:256"`
@@ -98,7 +98,7 @@ func (e *MainPromotionList) String() string {
 type Tag struct {
 	ID        string     `json:"id" gorm:"primaryKey;type:string;size:64"`
 	CreatedAt *time.Time `json:"created_at" gorm:"<-:create"`
-	UpdatedAt *time.Time `json:"updated_at" gorm:"<-:update"`
+	UpdatedAt *time.Time `json:"updated_at" gorm:"<-"`
 	OwnerType string     `json:"owner_type" gorm:"type:string;size:128;not null"`
 	OwnerID   string     `json:"owner_id" gorm:"type:string;size:64;not null"`
 	Name      string     `json:"name" gorm:"column:name;type:string;size:128"`

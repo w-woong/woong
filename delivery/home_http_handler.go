@@ -14,14 +14,16 @@ import (
 )
 
 type HomeHttpHandler struct {
-	timeout time.Duration
-	usc     port.HomeUsc
+	timeout             time.Duration
+	usc                 port.HomeUsc
+	homeGroupProductUsc port.HomeGroupProductUsc
 }
 
-func NewHomeHttpHandler(timeout time.Duration, usc port.HomeUsc) *HomeHttpHandler {
+func NewHomeHttpHandler(timeout time.Duration, usc port.HomeUsc, homeGroupProductUsc port.HomeGroupProductUsc) *HomeHttpHandler {
 	return &HomeHttpHandler{
-		timeout: timeout,
-		usc:     usc,
+		timeout:             timeout,
+		usc:                 usc,
+		homeGroupProductUsc: homeGroupProductUsc,
 	}
 }
 
@@ -46,6 +48,36 @@ func (d *HomeHttpHandler) HandleAddHome(w http.ResponseWriter, r *http.Request) 
 	if rowsAffected != 1 {
 		common.HttpError(w, http.StatusInternalServerError)
 		logger.Error("home was not added", logger.UrlField(r.URL.String()))
+		return
+	}
+
+	if err := common.HttpBodyOK.EncodeTo(w); err != nil {
+		logger.Error(err.Error(), logger.UrlField(r.URL.String()))
+		return
+	}
+}
+
+func (d *HomeHttpHandler) HandleAddHomeGroupProducts(w http.ResponseWriter, r *http.Request) {
+	var home dto.HomeGroupProductList
+	reqBody := common.HttpBody{
+		Documents: &home,
+	}
+
+	if err := si.DecodeJson(&reqBody, r.Body); err != nil {
+		common.HttpError(w, http.StatusBadRequest)
+		logger.Error(err.Error(), logger.UrlField(r.URL.String()))
+		return
+	}
+	rowsAffected, err := d.homeGroupProductUsc.AddHomeGroupProducts(r.Context(), home)
+	if err != nil {
+		common.HttpError(w, http.StatusInternalServerError)
+		logger.Error(err.Error(), logger.UrlField(r.URL.String()))
+		return
+	}
+
+	if rowsAffected != int64(len(home)) {
+		common.HttpError(w, http.StatusInternalServerError)
+		logger.Error("home group products were not added", logger.UrlField(r.URL.String()))
 		return
 	}
 

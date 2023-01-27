@@ -20,6 +20,17 @@ func NewHomeGroupProductPg(db *gorm.DB) *homeGroupProductPg {
 	}
 }
 
+func (a *homeGroupProductPg) CreateHomeGroupProduct(ctx context.Context, tx common.TxController, o entity.HomeGroupProduct) (int64, error) {
+	res := tx.(*txcom.GormTxController).Tx.WithContext(ctx).
+		Create(&o)
+
+	if res.Error != nil {
+		logger.Error(res.Error.Error())
+		return 0, txcom.ConvertErr(res.Error)
+	}
+	return res.RowsAffected, nil
+}
+
 func (a *homeGroupProductPg) DeleteByHomeID(ctx context.Context, tx common.TxController,
 	homeID string) (int64, error) {
 

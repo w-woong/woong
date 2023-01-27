@@ -11,9 +11,9 @@ import (
 	"github.com/w-woong/woong/port"
 )
 
-func HomeRoute(router *mux.Router, conf common.ConfigHttp, usc port.HomeUsc) *delivery.HomeHttpHandler {
+func HomeRoute(router *mux.Router, conf common.ConfigHttp, usc port.HomeUsc, homeGroupProductUsc port.HomeGroupProductUsc) *delivery.HomeHttpHandler {
 
-	handler := delivery.NewHomeHttpHandler(time.Duration(conf.Timeout)*time.Second, usc)
+	handler := delivery.NewHomeHttpHandler(time.Duration(conf.Timeout)*time.Second, usc, homeGroupProductUsc)
 
 	router.HandleFunc("/v1/woong/home",
 		middlewares.AuthBearerHandler(handler.HandleAddHome, conf.BearerToken)).Methods(http.MethodPost)
@@ -22,6 +22,8 @@ func HomeRoute(router *mux.Router, conf common.ConfigHttp, usc port.HomeUsc) *de
 		middlewares.AuthBearerHandler(handler.HandleFindByAppConfigID, conf.BearerToken),
 	).Methods(http.MethodGet)
 
+	router.HandleFunc("/v1/woong/home/mainproducts",
+		middlewares.AuthBearerHandler(handler.HandleAddHomeGroupProducts, conf.BearerToken)).Methods(http.MethodPost)
 	return handler
 }
 

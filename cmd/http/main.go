@@ -114,12 +114,14 @@ func main() {
 	var appConfigRepo port.AppConfigRepo
 	var homeRepo port.HomeRepo
 	var shortNoticeRepo port.ShortNoticeRepo
+	var homeGroupProductRepo port.HomeGroupProductRepo
 	switch conf.Server.Repo.Driver {
 	case "pgx":
 		beginner = txcom.NewGormTxBeginner(gormDB)
 		appConfigRepo = adapter.NewPgAppconfig(gormDB)
 		homeRepo = adapter.NewHomePg(gormDB)
 		shortNoticeRepo = adapter.NewShortNoticePg(gormDB)
+		homeGroupProductRepo = adapter.NewHomeGroupProductPg(gormDB)
 	default:
 		logger.Error(conf.Server.Repo.Driver + " is not allowed")
 		os.Exit(1)
@@ -137,11 +139,12 @@ func main() {
 	// usecase
 	usc := usecase.NewAppConfigUsc(beginner, appConfigRepo)
 	homeUsc := usecase.NewHomeUsc(beginner, homeRepo, shortNoticeRepo, groupSvc)
+	homeGroupProductUsc := usecase.NewHomeGroupProductUsc(beginner, homeGroupProductRepo)
 
 	// router
 	router := mux.NewRouter()
 	route.AppConfigRoute(router, conf.Server.Http, usc)
-	route.HomeRoute(router, conf.Server.Http, homeUsc)
+	route.HomeRoute(router, conf.Server.Http, homeUsc, homeGroupProductUsc)
 
 	// http server
 	tlsConfig := sihttp.CreateTLSConfigMinTls(tls.VersionTLS12)

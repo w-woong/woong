@@ -20,3 +20,15 @@ func ToHomeGroupProductDto(src *entity.HomeGroupProduct) (res dto.HomeGroupProdu
 	err = structmapper.Map(src, &res)
 	return
 }
+
+func ToHomeGroupProductListEntity(input dto.HomeGroupProductList) (entity.HomeGroupProductList, error) {
+	output := make(entity.HomeGroupProductList, len(input))
+	for i := range input {
+		c, err := ToHomeGroupProductEntity(&input[i])
+		if err != nil {
+			return nil, err
+		}
+		output[i] = c
+	}
+	return output, nil
+}

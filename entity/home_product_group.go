@@ -3,6 +3,8 @@ package entity
 import (
 	"encoding/json"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type HomeGroupProduct struct {
@@ -17,6 +19,14 @@ type HomeGroupProduct struct {
 func (e *HomeGroupProduct) String() string {
 	b, _ := json.Marshal(e)
 	return string(b)
+}
+
+func (e HomeGroupProduct) CreateID() string {
+	return uuid.New().String()
+}
+
+func (e *HomeGroupProduct) CreateSetID() {
+	e.ID = e.CreateID()
 }
 
 type HomeGroupProductList []HomeGroupProduct

@@ -35,5 +35,5 @@ server:
 
 client:
   http:
-    url: 'http://localhost:49002'
+    url: 'https://localhost:49002'
     bearer_token: 'ab2316584873095f017f6dfa7a9415794f563fcc473eb3fe65b9167e37fd5a4b'

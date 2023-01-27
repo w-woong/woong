@@ -41,7 +41,9 @@ func (u *homeUsc) AddHome(ctx context.Context, home dto.Home) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	homeEntity.CreateSetID()
+	if homeEntity.ID == "" {
+		homeEntity.CreateSetID()
+	}
 	homeEntity.ReferTo(homeEntity.AppConfigID)
 
 	rowsAffected, err := u.homeRepo.CreateHome(ctx, tx, homeEntity)
