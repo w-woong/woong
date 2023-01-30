@@ -8,7 +8,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/stretchr/testify v1.8.0
-	github.com/w-woong/common v0.0.57
+	github.com/w-woong/common v0.0.58
 	github.com/w-woong/product v1.1.12
 	github.com/wonksing/structmapper v0.0.4
 	gorm.io/driver/postgres v1.4.4
