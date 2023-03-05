@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-wonk/si"
-	"github.com/go-wonk/si/sigorm"
-	"github.com/go-wonk/si/sihttp"
+	"github.com/go-wonk/si/v2"
+	"github.com/go-wonk/si/v2/sigorm"
+	"github.com/go-wonk/si/v2/sihttp"
 	"github.com/gorilla/mux"
 	"github.com/w-woong/common"
 	"github.com/w-woong/common/configs"
@@ -133,7 +133,8 @@ func main() {
 	}
 
 	var groupSvc productport.GroupSvc
-	groupSvc = productadapter.NewGroupHttp(sihttp.DefaultInsecureClient(),
+	client := conf.Client.Http.NewHttpClient()
+	groupSvc = productadapter.NewGroupHttp(client,
 		conf.Client.Http.Url, conf.Client.Http.BearerToken)
 
 	// usecase

@@ -37,3 +37,10 @@ client:
   http:
     url: 'https://localhost:49002'
     bearer_token: 'ab2316584873095f017f6dfa7a9415794f563fcc473eb3fe65b9167e37fd5a4b'
+    dial_timeout: 5
+    max_idle_conns: 50
+    idle_conn_timeout: 120
+    disable_compression: false
+    disable_keep_alive: false
+    client_timeout: 12
+    insecure: true

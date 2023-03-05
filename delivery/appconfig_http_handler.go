@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-wonk/si"
+	"github.com/go-wonk/si/v2"
 	"github.com/gorilla/mux"
 	"github.com/w-woong/common"
 	"github.com/w-woong/common/logger"
